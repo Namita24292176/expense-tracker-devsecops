@@ -1,0 +1,5 @@
+boto3
+pytest
+pylint
+pip-audit
+
