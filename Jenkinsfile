@@ -34,10 +34,12 @@ pipeline {
 
 
         stage('Run tests') {
-            steps {
-                sh '. venv/bin/activate && pytest'
-            }
-        }
+    steps {
+        // Ensure Python can import app.py from the repo root
+        sh '. venv/bin/activate && PYTHONPATH=. pytest'
+    }
+}
+
 
         stage('Run pip-audit') {
             steps {
