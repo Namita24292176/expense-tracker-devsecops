@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Jenkins already checks out when using "Pipeline script from SCM"
+                // but we keep this for clarity
+                checkout scm
+            }
+        }
+
+        stage('Set up Python') {
+            steps {
+                sh 'python3 --version'
+                // create venv if not exists
+                sh 'python3 -m venv venv || true'
+                sh '. venv/bin/activate && python3 -m pip install --upgrade pip'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh '. venv/bin/activate && pip install -r requirements.txt'
+            }
+        }
+
+        stage('Lint with Pylint') {
+            steps {
+                sh '. venv/bin/activate && pylint app.py'
+            }
+        }
+
+        stage('Run tests') {
+            steps {
+                sh '. venv/bin/activate && pytest'
+            }
+        }
+
+        stage('Run pip-audit') {
+            steps {
+                sh '. venv/bin/activate && pip install pip-audit && pip-audit'
+            }
+        }
+    }
+}
