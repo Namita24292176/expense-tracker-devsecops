@@ -6,33 +6,66 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>Expense Tracker</h1>
+  <div class="app-shell">
+    <header class="app-header">
+      <h1>Expense Tracker</h1>
+      <p class="subtitle">Quickly add and review your daily expenses.</p>
+    </header>
 
-  <section class="card">
-    <h2>Add Expense</h2>
-    <form action="/add-expense" method="POST">
-      <input type="text" name="description" placeholder="Description" required>
-      <input type="number" step="0.01" name="amount" placeholder="Amount" required>
-      <input type="date" name="date" required>
-      <button type="submit">Add</button>
-    </form>
-  </section>
+    <main class="layout">
+      <section class="card card-form">
+        <div class="card-header">
+          <h2>Add Expense</h2>
+          <span class="tag">New</span>
+        </div>
 
-  <section class="card">
-    <h2>Expenses</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!--EXPENSE_ROWS-->
-      </tbody>
-    </table>
-  </section>
+        <form action="/add-expense" method="POST" class="expense-form">
+          <div class="form-row">
+            <label>
+              Description
+              <input type="text" name="description" placeholder="e.g. Groceries, Coffee" required>
+            </label>
+          </div>
+
+          <div class="form-row form-row-2">
+            <label>
+              Amount (€)
+              <input type="number" step="0.01" name="amount" placeholder="0.00" required>
+            </label>
+
+            <label>
+              Date
+              <input type="date" name="date" required>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary">Add Expense</button>
+        </form>
+      </section>
+
+      <section class="card card-table">
+        <div class="card-header">
+          <h2>Expenses</h2>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th class="right">Amount (€)</th>
+                <th class="center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!--EXPENSE_ROWS-->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
 </body>
 </html>
+

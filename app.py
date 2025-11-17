@@ -1,3 +1,5 @@
+# pylint: disable=missing-module-docstring,missing-function-docstring,invalid-name,superfluous-parens
+
 import json
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler

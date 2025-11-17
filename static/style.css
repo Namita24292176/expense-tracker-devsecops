@@ -1,43 +1,289 @@
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  margin: 20px;
-  background: #f5f5f5;
-}
+/* Layout + base */
 
-h1 {
-  margin-bottom: 16px;
-}
-
-.card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-input, button {
-  padding: 8px;
-  margin: 4px 0;
-  width: 100%;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #0f172a;
+  --bg-soft: #0b1220;
+  --card-bg: #0b1120;
+  --card-border: #1e293b;
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.12);
+  --accent-strong: #0ea5e9;
+  --danger: #f97373;
+  --text-main: #e5e7eb;
+  --text-soft: #9ca3af;
+  --radius-lg: 18px;
+  --radius-md: 10px;
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.7);
+  --shadow-subtle: 0 10px 30px rgba(15, 23, 42, 0.6);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at top left, #1e293b 0, transparent 50%),
+    radial-gradient(circle at bottom right, #0ea5e9 0, transparent 55%),
+    linear-gradient(135deg, #020617, #020617 40%, #020617 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* Shell */
+
+.app-shell {
+  width: 100%;
+  max-width: 1100px;
+  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%)
+              ,rgba(15, 23, 42, 0.96);
+  border-radius: 28px;
+  padding: 28px 28px 32px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(18px);
+}
+
+/* Header */
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-soft);
+}
+
+/* Layout */
+
+.layout {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 820px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+    align-items: flex-start;
+  }
+}
+
+/* Cards */
+
+.card {
+  background: radial-gradient(circle at top center, rgba(15, 23, 42, 0.85), var(--card-bg));
+  border-radius: var(--radius-lg);
+  padding: 18px 18px 20px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-subtle);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+/* Form */
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .form-row-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+label {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+input,
 button {
+  font-family: inherit;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.18s ease, box-shadow 0.18s ease, background 0.18s ease,
+    transform 0.08s ease;
+}
+
+input::placeholder {
+  color: #64748b;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7);
+  background: #020617;
+  transform: translateY(-0.5px);
+}
+
+/* Buttons */
+
+.btn-primary {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0b1120;
+  background: linear-gradient(135deg, var(--accent-strong), #38bdf8);
+  box-shadow: 0 14px 30px rgba(56, 189, 248, 0.4);
   cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    filter 0.12s ease, background 0.12s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 18px 40px rgba(56, 189, 248, 0.55);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(56, 189, 248, 0.45);
+}
+
+/* Table */
+
+.table-wrapper {
+  margin-top: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(30, 64, 175, 0.7);
+  background: radial-gradient(circle at top center, rgba(15, 23, 42, 0.9), #020617);
+  overflow: hidden;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 12px;
+  font-size: 0.85rem;
 }
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
+thead {
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.75), rgba(37, 99, 235, 0.85));
+}
+
+th,
+td {
+  padding: 9px 10px;
 }
 
 th {
-  background: #fafafa;
+  text-align: left;
+  font-weight: 500;
+  color: #e5e7eb;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+}
+
+th.right,
+td.right {
+  text-align: right;
+}
+
+th.center,
+td.center {
+  text-align: center;
+}
+
+tbody tr {
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+tbody tr:nth-child(odd) {
+  background: rgba(15, 23, 42, 0.96);
+}
+
+tbody tr:hover {
+  background: rgba(30, 64, 175, 0.32);
+  transform: translateY(-1px);
+}
+
+/* Delete link */
+
+a {
+  color: var(--danger);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+a:hover {
+  text-decoration: underline;
 }
