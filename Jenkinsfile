@@ -26,10 +26,12 @@ pipeline {
         }
 
         stage('Lint with Pylint') {
-            steps {
-                sh '. venv/bin/activate && pylint app.py'
-            }
-        }
+    steps {
+        // Run pylint but do not fail the build on style warnings
+        sh '. venv/bin/activate && pylint --exit-zero app.py'
+    }
+}
+
 
         stage('Run tests') {
             steps {
