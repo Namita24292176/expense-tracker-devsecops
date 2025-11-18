@@ -7,15 +7,23 @@ from urllib.parse import parse_qs, urlparse
 from datetime import datetime
 from html import escape
 
-DATA_FILE = "expenses.json"
+# ----- Paths & data file -----
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, "expenses.json")
+TEMPLATE_FILE = os.path.join(BASE_DIR, "templates", "index.html")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 
 
 def load_expenses():
     """Load expenses from a local JSON file."""
     if not os.path.exists(DATA_FILE):
         return []
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        # If file is corrupted, reset it
+        return []
 
 
 def save_expenses(expenses):
@@ -26,7 +34,7 @@ def save_expenses(expenses):
 
 def generate_index_page():
     """Read HTML template and inject expense rows."""
-    with open("templates/index.html", "r", encoding="utf-8") as f:
+    with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
         template = f.read()
 
     expenses = load_expenses()
@@ -71,23 +79,38 @@ def validate_expense(description, amount_str, date_str):
 class ExpenseTrackerHandler(BaseHTTPRequestHandler):
     """HTTP request handler for the expense tracker."""
 
+    def _set_common_headers(self, status=200, content_type="text/html; charset=utf-8"):
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        # Simple security headers
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.end_headers()
+
     def do_GET(self):
         if self.path == "/" or self.path.startswith("/index"):
             page = generate_index_page()
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
+            self._set_common_headers(200, "text/html; charset=utf-8")
             self.wfile.write(page.encode("utf-8"))
 
         elif self.path.startswith("/static/"):
-            file_path = self.path.lstrip("/")
-            if os.path.exists(file_path):
-                self.send_response(200)
+            # Serve static files from the static directory safely
+            rel_path = self.path.lstrip("/")
+            # Prevent path traversal
+            if not rel_path.startswith("static/"):
+                self.send_error(403, "Forbidden")
+                return
+
+            file_path = os.path.join(BASE_DIR, rel_path)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
                 if file_path.endswith(".css"):
-                    self.send_header("Content-Type", "text/css")
+                    content_type = "text/css"
+                elif file_path.endswith(".js"):
+                    content_type = "application/javascript"
                 else:
-                    self.send_header("Content-Type", "text/plain")
-                self.end_headers()
+                    content_type = "application/octet-stream"
+
+                self._set_common_headers(200, content_type)
                 with open(file_path, "rb") as f:
                     self.wfile.write(f.read())
             else:
@@ -127,6 +150,7 @@ class ExpenseTrackerHandler(BaseHTTPRequestHandler):
                 expenses.append(expense)
                 save_expenses(expenses)
 
+            # For now, always redirect back to home (could show errors later)
             self.send_response(302)
             self.send_header("Location", "/")
             self.end_headers()
@@ -135,7 +159,9 @@ class ExpenseTrackerHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    # AWS (and most PaaS) will inject a PORT environment variable
     port = int(os.environ.get("PORT", 5000))
-    server = HTTPServer(("", port), ExpenseTrackerHandler)
+    server_address = ("0.0.0.0", port)  # Bind to all interfaces for cloud hosting
+    server = HTTPServer(server_address, ExpenseTrackerHandler)
     print(f"Server running on port {port}")
     server.serve_forever()
